@@ -111,6 +111,49 @@ crypto-trading-bots/
 
 **Output:** Signals printed to terminal, trades logged
 
+### RUN BOT 1
+```bash
+source venv/bin/activate
+python bots/bot1_technical.py
+```
+
+### RUN OTHER BOTS
+```bash
+python bots/bot2_multicoin.py
+python bots/bot3_trend.py
+python bots/bot4_reversion.py
+python bots/bot5_breakout.py
+python bots/bot6_volume.py
+python bots/bot7_news.py
+```
+
+### RUN ALL BOTS
+```bash
+python master.py
+```
+
+### BACKTEST STRATEGIES
+```bash
+python backtest.py bot1 BTCUSDT
+python backtest.py bot3 ETHUSDT
+```
+
+### VIEW THE DASHBOARD
+```bash
+python dashboard.py
+```
+
+> Tip: Use `SIMULATION_MODE=true` in `.env` to keep orders simulated until you confirm the system works.
+> Set `MAX_RISK_PERCENT` to `1.0` or lower for safer position sizing.
+
+### ACCURACY & SAFETY IMPROVEMENTS
+- Risk-based position sizing with `MAX_RISK_PERCENT`
+- Simulation mode until you validate logic
+- Recommended stop-loss and take-profit levels via `STOP_LOSS_PCT` and `TAKE_PROFIT_PCT`
+- Better signal filtering using ATR, Bollinger Bands, and multi-indicator confirmation
+- News sentiment checks for Bot 7 to avoid trading on weak headlines
+- Historical backtesting support for strategy evaluation
+
 ---
 
 ### PHASE 3 — Build Bot 2: Multi-Coin (30 mins)
