@@ -31,17 +31,14 @@ def _call_groq(prompt: str) -> str:
         return ""
     try:
         import groq
-        client = groq.Client(api_key=GROQ_API_KEY)
-        if hasattr(client, "responses"):
-            response = client.responses.create(
-                model="groq-1.0",
-                input=[{"role": "user", "content": prompt}],
-                max_output_tokens=60,
-            )
-            if hasattr(response, "output_text") and response.output_text:
-                return response.output_text
-            if hasattr(response, "output"):
-                return "".join(item.get("content", "") for item in response.output if isinstance(item, dict))
+        client = groq.Groq(api_key=GROQ_API_KEY)
+        response = client.chat.completions.create(
+            model="mixtral-8x7b-32768",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=60,
+        )
+        if response.choices and response.choices[0].message.content:
+            return response.choices[0].message.content.strip()
     except Exception:
         pass
     return ""

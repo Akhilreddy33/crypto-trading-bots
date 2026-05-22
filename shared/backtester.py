@@ -111,6 +111,29 @@ def run_backtest(
                 )
                 position = None
 
+    # Close any remaining open position at the last price
+    if position is not None:
+        final_price = float(df["close"].iloc[-1])
+        final_time = df["close_time"].iloc[-1]
+        entry_price = position["entry_price"]
+        direction = 1 if position["side"] == "BUY" else -1
+        quantity = amount_usdt / entry_price
+        pnl = direction * (final_price - entry_price) * quantity
+        return_pct = (final_price / entry_price - 1) * direction * 100
+        report.trades.append(
+            BacktestTrade(
+                symbol=symbol,
+                side=position["side"],
+                entry_time=position["entry_time"],
+                entry_price=entry_price,
+                exit_time=final_time,
+                exit_price=final_price,
+                pnl=round(pnl, 2),
+                return_pct=round(return_pct, 2),
+                notes="end_of_data",
+            )
+        )
+
     report.total_trades = len(report.trades)
     if report.total_trades:
         total_return = sum(trade.return_pct for trade in report.trades)

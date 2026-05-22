@@ -1,4 +1,5 @@
 import os
+import time
 import pandas as pd
 import requests
 from dotenv import load_dotenv
@@ -18,6 +19,9 @@ BASE_URL_TESTNET = "https://testnet.binance.vision/api"
 PUBLIC_BINANCE_API = "https://api.binance.com/api/v3/klines"
 PUBLIC_BINANCE_US_API = "https://api.binance.us/api/v3/klines"
 PUBLIC_TESTNET_API = "https://testnet.binance.vision/api/v3/klines"
+
+_last_request_time = 0.0
+_MIN_REQUEST_INTERVAL = 0.5  # seconds between API calls
 
 
 def _has_valid_api_credentials(key: str, secret: str) -> bool:
@@ -46,6 +50,12 @@ def get_binance_client(testnet: bool = True):
 
 
 def fetch_klines(symbol: str, interval: str = FETCH_INTERVAL, limit: int = 200) -> pd.DataFrame:
+    global _last_request_time
+    elapsed = time.time() - _last_request_time
+    if elapsed < _MIN_REQUEST_INTERVAL:
+        time.sleep(_MIN_REQUEST_INTERVAL - elapsed)
+    _last_request_time = time.time()
+
     if _has_valid_api_credentials(BINANCE_TESTNET_API_KEY, BINANCE_TESTNET_API_SECRET):
         client = get_binance_client(testnet=True)
         if hasattr(client, "klines"):
