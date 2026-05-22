@@ -39,7 +39,7 @@ def summarize_log(path: str) -> dict:
 
 
 def show_dashboard():
-    log_files = glob(os.path.join("logs", "*.log"))
+    log_files = glob(os.path.join(LOG_FOLDER, "*.log"))
     if not log_files:
         print("No bot logs found. Run a bot first.")
         return
