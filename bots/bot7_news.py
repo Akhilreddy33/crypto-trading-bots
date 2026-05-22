@@ -7,13 +7,13 @@ from shared.trader import order_market, simulate_order
 from shared.config import TRADE_SIZE, COIN_LIST
 
 
-def detect_symbol_from_text(text: str) -> str:
+def detect_symbol_from_text(text: str) -> str | None:
     text_lower = text.lower()
     for symbol in COIN_LIST:
         coin = symbol.replace("USDT", "").lower()
         if coin in text_lower:
             return symbol
-    return "BTCUSDT"
+    return None
 
 
 def run_bot():
@@ -27,6 +27,9 @@ def run_bot():
         title = item.get("title", "")
         body = item.get("selftext", "") or ""
         symbol = detect_symbol_from_text(title + " " + body)
+        if symbol is None:
+            print(f"No recognized coin in: {title[:60]}... skipping.")
+            continue
         sentiment = analyze_news_sentiment(title, body)
         print(f"News: {title[:80]}...")
         print(f"Detected symbol: {symbol}, sentiment: {sentiment}")
@@ -39,13 +42,11 @@ def run_bot():
             amount_usdt = max_trade_amount(TRADE_SIZE)
             order = order_market(symbol=symbol, side=side, amount_usdt=amount_usdt, filename="bot7_news.log")
             print("Order placed:", order)
-            return
         except Exception as exc:
             print("Trade failed, simulating instead:", exc)
             quantity = float(TRADE_SIZE)
             order = simulate_order(symbol=symbol, side=side, quantity=quantity, filename="bot7_news.log")
             print(order)
-            return
 
     print("No strong news-driven trade found.")
 
